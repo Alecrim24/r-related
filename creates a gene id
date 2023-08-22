@@ -1,0 +1,15 @@
+# creates a gene id for the transcript to gene file that wasnt produced fromsalmon during salmon_quant
+
+library(readr)
+
+geneinfo<-read_tsv("H.m_quant.sf")
+
+geneinfo<-as.data.frame(geneinfo)
+
+geneinfo$gene_id<-geneinfo$Name
+
+geneinfo$gene_id<-sub("_i[[:digit:]]+", "", geneinfo$gene_id)
+
+tx2gene<-geneinfo[, c("Name", "gene_id")]
+
+saveRDS(tx2gene, "tx2gene.RDS")
