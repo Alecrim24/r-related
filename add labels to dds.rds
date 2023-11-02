@@ -1,0 +1,41 @@
+library(ggplot2)
+library(DESeq2)
+
+# Assuming you have already loaded your DESeqDataSet and created 'vsd' using vst()
+
+# Sample labels
+sample_labels <- c(
+  "M.bP1-17-25_CCAATTAGGC-CATGTCGAGG_L001_R1_001.fastq.gz_quant.sf",
+  "M.bP2-12-20_CGATGATAGC-TAGCCGTGAT_L001_R1_001.fastq.gz_quant.sf",
+  "M.bP3-36-44_TCTAGGCATA-TGTGGAAGAT_L001_R1_001.fastq.gz_quant.sf",
+  "M.bP1-20-28_CATCAGGCGT-CGTGTTACCG_L001_R1_001.fastq.gz_quant.sf",
+  "M.bP2-13_b-21_b_TAGGAAGCGG-CCAATCCAGG_L001_R1_001.fastq.gz_quant.sf",
+  "M.bP3-37-46_GATCACGGTT-GCGATCCGTT_L001_R1_001.fastq.gz_quant.sf",
+  "M.bP1-22-30_CTTACTCTCT-CTGCTTAAGG_L001_R1_001.fastq.gz_quant.sf",
+  "M.bP2-14-22_CCAGTGCACT-CCTCCGTATC_L001_R1_001.fastq.gz_quant.sf",
+  "M.bP3-38-45_GCCTCGATTA-ACGGCATGTA_L001_R1_001.fastq.gz_quant.sf",
+  "M.bP1-23_b-31_b_AAGGTGTTAG-TGTGCTGGTG_L001_R1_001.fastq.gz_quant.sf",
+  "M.bP2-47-55_GTTCTACGAA-CTACAGACAA_L001_R1_001.fastq.gz_quant.sf",
+  "M.bP3-39_b-47_b_TGACATAGGT-TACCAGAGAT_L001_R1_001.fastq.gz_quant.sf",
+  "M.bP1-2-4_TCGGACAACG-GTCTGGATGG_L001_R1_001.fastq.gz_quant.sf",
+  "M.bP2-48-56_CTAAGATCCT-AACACGAGCG_L001_R1_001.fastq.gz_quant.sf",
+  "M.bP3-40-48_CCGCATTCCT-GCAACGAAGG_L001_R1_001.fastq.gz_quant.sf",
+  "M.bP1-25-33_CAGGACCAAT-GCGGATATTA_L001_R1_001.fastq.gz_quant.sf",
+  "M.bP2-7-14_AGCTCACGAT-CCTCATCCGA_L001_R1_001.fastq.gz_quant.sf",
+  "M.bP3-41-49_CGTAAGAGAA-GTACTCCAGG_L001_R1_001.fastq.gz_quant.sf",
+  "M.bP1-27-35_TCCGCGAGTA-CGCTGAATGC_L001_R1_001.fastq.gz_quant.sf",
+  "M.bP2-8-15_ACGCAACACA-CATTCAGGAG_L001_R1_001.fastq.gz_quant.sf",
+  "M.bP3-42_b-50_b_GCAACATCAA-TGACCTAGTT_L001_R1_001.fastq.gz_quant.sf",
+  "M.bP1-3-6_CGACTAACGT-ATCAGCAGCA_L001_R1_001.fastq.gz_quant.sf",
+  "M.bP2-9-16_AGGTATGAGA-GAACTCTTGT_L001_R1_001.fastq.gz_quant.sf",
+  "M.bP3-43-52_CTAGAGTGAT-CTCAGGCAGT_L001_R1_001.fastq.gz_quant.sf"
+)
+
+# Create the PCA plot with labels
+pca_plot <- plotPCA(vsd, intgroup = "Tissues")
+
+# Add sample labels to the PCA plot
+pca_plot <- pca_plot + geom_text(aes(label = sample_labels), hjust = 0, vjust = 0, nudge_x = 0.1, nudge_y = 0.1)
+
+# Print the PCA plot
+print(pca_plot)
