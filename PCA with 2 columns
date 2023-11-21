@@ -1,0 +1,30 @@
+library(DESeq2)
+library(tidyverse)
+library(ggfortify)
+library(ggtext)
+library(rtracklayer)
+library(ggpubr)
+library(dplyr)
+
+
+#load raw data ----
+count_matrix_path <- read.table("C:/Users/bop21gwh/bioinformatics/salmon.gene.counts.matrix")
+head(count_matrix_path)
+sample_info <- read.csv("C:/Users/bop21gwh/Documents/PhD work/Transcriptome/sample_info_with_specie-tissue.csv", row.names = NULL)
+# extract colnames to change count matrix colnames
+# new
+head(sample_info)
+
+
+dds_all <- DESeqDataSetFromMatrix(round(count_matrix_path), colData = sample_info, design = ~Tissue + Species)
+dds_all <- estimateSizeFactors(dds_all)
+vst_all <- vst(dds_all, blind = TRUE)
+
+pca_data <- plotPCA(vst_all, intgroup = c('Tissue', 'Species'), returnData = TRUE)
+print(pca_data)
+
+pca_plot <- ggplot(pca_data, aes(x = PC1, y = PC2, color = Tissue, shape = Species)) +
+  geom_point(size = 3) +
+  theme_bw()
+
+print(pca_plot)
