@@ -13,20 +13,26 @@ head(count_matrix_path)
 sample_info <- read.csv("C:/Users/bop21gwh/Documents/PhD work/Transcriptome/sample_info_with_specie-tissue.csv", row.names = NULL)
 # extract colnames to change count matrix colnames
 # new
-print(sample_info)
+head(sample_info)
 
 
-dds_all <- DESeqDataSetFromMatrix(round(count_matrix_path), colData = sample_info, design = ~Tissue + Species)
+dds_all <- DESeqDataSetFromMatrix(round(count_matrix_path), colData = sample_info, design = ~Tissue + Species + sample_id)
 dds_all <- estimateSizeFactors(dds_all)
 vst_all <- vst(dds_all, blind = TRUE)
 
-pca_data <- plotPCA(vst_all, intgroup = c('Tissue', 'Species'), returnData = TRUE)
-print(pca_data)
+#####include all columns needed but pca will still create its own tiles
+
+pca_data <- plotPCA(vst_all, intgroup = c('Tissue', 'Species', 'sample_id'), returnData = TRUE)
+head(pca_data)
 
 pca_plot <- ggplot(pca_data, aes(x = PC1, y = PC2, color = Tissue, shape = Species)) +
   geom_point(size = 3) +
   theme_bw()
 
-pca_plot1 <- pca_plot + geom_text(aes(label = sample), hjust = 0, vjust = 0, nudge_x = 0.1, nudge_y = 0.1)
+######## check the pca head(pca_data) to see what the pca column titles are
+
+pca_plot1 <- pca_plot + geom_text(aes(label = name), hjust = 0, vjust = 0, nudge_x = 0.1, nudge_y = 0.1)
 
 print(pca_plot1)
+
+
