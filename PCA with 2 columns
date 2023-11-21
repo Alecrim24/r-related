@@ -13,7 +13,7 @@ head(count_matrix_path)
 sample_info <- read.csv("C:/Users/bop21gwh/Documents/PhD work/Transcriptome/sample_info_with_specie-tissue.csv", row.names = NULL)
 # extract colnames to change count matrix colnames
 # new
-head(sample_info)
+print(sample_info)
 
 
 dds_all <- DESeqDataSetFromMatrix(round(count_matrix_path), colData = sample_info, design = ~Tissue + Species)
@@ -27,4 +27,6 @@ pca_plot <- ggplot(pca_data, aes(x = PC1, y = PC2, color = Tissue, shape = Speci
   geom_point(size = 3) +
   theme_bw()
 
-print(pca_plot)
+pca_plot1 <- pca_plot + geom_text(aes(label = 'sample'), hjust = 0, vjust = 0, nudge_x = 0.1, nudge_y = 0.1)
+
+print(pca_plot1)
