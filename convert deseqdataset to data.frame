@@ -1,0 +1,15 @@
+#convert deseq dataset to coercible data.frame
+#import was a dds object deseqdataset
+data_frame_import <- tibble::as_tibble(tidy(import, colData = FALSE, intercept = FALSE))
+class(data_frame_import)
+data_frame_import
+
+#create a log2foldchange column 
+library(dplyr)
+data_frame_import <- data_frame_import %>%
+  mutate(log2FoldChange = log2(estimate))
+
+
+# plot volcano but plotting doesnt work yet
+data_frame_import %>% 
+  ggplot(aes(x = log2FoldChange, y = -log10(padj))) + geom_point()
