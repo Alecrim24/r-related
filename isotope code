@@ -1,0 +1,42 @@
+# Load necessary libraries
+library(dplyr)
+library(ggplot2)
+
+path <- read.csv("C:/Users/bop21gwh/Documents/PhD work/isotope/GH_200524_results.csv")
+
+print(path)
+summary(path)
+
+print(colnames(path))
+
+# Check the structure and summary of the dataset
+str(path)
+summary(path$Delta.Air.vs.15N)
+
+# Convert Delta.Air.vs.15N to numeric, coercing non-numeric values to NA
+path$Delta.Air.vs.15N <- as.numeric(as.character(path$Delta.Air.vs.15N))
+
+# Check for any NAs introduced by coercion
+summary(path$Delta.Air.vs.15N)
+
+# Summarize data to calculate mean and standard error of Delta.Air.vs.15N for each Tissue type and Treatment
+summary_data <- path %>%
+  group_by(Tissue, Treatment) %>%
+  summarise(
+    mean_Delta_Air_vs_15N = mean(Delta.Air.vs.15N, na.rm = TRUE),
+    se_Delta_Air_vs_15N = sd(Delta.Air.vs.15N, na.rm = TRUE) / sqrt(n())
+  )
+
+# Print the summarized data to ensure it's correct
+print(summary_data)
+
+# Create a bar plot with error bars using ggplot2
+ggplot(summary_data, aes(x = Tissue, y = mean_Delta_Air_vs_15N, fill = Treatment)) +
+  geom_bar(stat = "identity", position = position_dodge(), color = "black", width = 0.7) +
+  geom_errorbar(aes(ymin = mean_Delta_Air_vs_15N - se_Delta_Air_vs_15N, ymax = mean_Delta_Air_vs_15N + se_Delta_Air_vs_15N), 
+                position = position_dodge(0.7), width = 0.25) +
+  xlab("Tissue") +
+  ylab("Mean Delta Air vs 15N") +
+  ggtitle("Isotopic uptake Ants vs no ants in H.m") +
+  theme_minimal() +
+  scale_fill_manual(values = c("No ants" = "gray", "Control + ants" = "white"))  # You can customize the colors as needed
