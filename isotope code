@@ -2,22 +2,17 @@
 library(dplyr)
 library(ggplot2)
 
-path <- read.csv("C:/Users/bop21gwh/Documents/PhD work/isotope/GH_200524_results.csv")
+# Read CSV with NA handling
+path <- read.csv("C:/Users/bop21gwh/Documents/PhD work/isotope/GH_200524_results.csv", na.strings = c("", "NA"))
 
-print(path)
-summary(path)
-
-print(colnames(path))
-
-# Check the structure and summary of the dataset
-str(path)
-summary(path$Delta.Air.vs.15N)
+# Ensure the Tissue column is a factor with the desired order
+path$Tissue <- factor(path$Tissue, levels = c("Leaves", "Tuber", "Smooth", "Warty"))
 
 # Convert Delta.Air.vs.15N to numeric, coercing non-numeric values to NA
 path$Delta.Air.vs.15N <- as.numeric(as.character(path$Delta.Air.vs.15N))
 
-# Check for any NAs introduced by coercion
-summary(path$Delta.Air.vs.15N)
+# Remove rows with NA in Delta.Air.vs.15N (if needed)
+path <- path[complete.cases(path$Delta.Air.vs.15N), ]
 
 # Summarize data to calculate mean and standard error of Delta.Air.vs.15N for each Tissue type and Treatment
 summary_data <- path %>%
@@ -37,6 +32,6 @@ ggplot(summary_data, aes(x = Tissue, y = mean_Delta_Air_vs_15N, fill = Treatment
                 position = position_dodge(0.7), width = 0.25) +
   xlab("Tissue") +
   ylab("Mean Delta Air vs 15N") +
-  ggtitle("Isotopic uptake Ants vs no ants in H.m") +
+  ggtitle("Isotopic uptake Ants vs no ants in Hydnophytum moseleyanum") +
   theme_minimal() +
-  scale_fill_manual(values = c("No ants" = "gray", "Control + ants" = "white"))  # You can customize the colors as needed
+  scale_fill_manual(values = c("No ants" = "gray", "Control + ants" = "white")) 
