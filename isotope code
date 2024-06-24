@@ -1,12 +1,19 @@
-# Load necessary libraries
-library(dplyr)
 library(ggplot2)
+library(dplyr)
 
-# Read CSV with NA handling
-path <- read.csv("C:/Users/bop21gwh/Documents/PhD work/isotope/GH_200524_results.csv", na.strings = c("", "NA"))
+# Load the data
+path <- read.csv("C:/Users/bop21gwh/Documents/PhD work/isotope/isotope_data.csv", na.strings = c("", "NA"))
+
+# Filter the data to include only the species H.m
+path <- path[path$Species == "H.m", ]
+
+print(path)
 
 # Ensure the Tissue column is a factor with the desired order
 path$Tissue <- factor(path$Tissue, levels = c("Leaves", "Tuber", "Smooth", "Warty"))
+
+# Ensure the Treatment column is a factor with "No ants" appearing first
+path$Treatment <- factor(path$Treatment, levels = c("No ants", "Control + ants"))
 
 # Convert Delta.Air.vs.15N to numeric, coercing non-numeric values to NA
 path$Delta.Air.vs.15N <- as.numeric(as.character(path$Delta.Air.vs.15N))
@@ -22,16 +29,69 @@ summary_data <- path %>%
     se_Delta_Air_vs_15N = sd(Delta.Air.vs.15N, na.rm = TRUE) / sqrt(n())
   )
 
+# Create a combined factor for Tissue and Treatment to control the order in the plot
+summary_data$Tissue_Treatment <- interaction(summary_data$Tissue, summary_data$Treatment, sep = " - ")
+
 # Print the summarized data to ensure it's correct
 print(summary_data)
 
 # Create a bar plot with error bars using ggplot2
-ggplot(summary_data, aes(x = Tissue, y = mean_Delta_Air_vs_15N, fill = Treatment)) +
-  geom_bar(stat = "identity", position = position_dodge(), color = "black", width = 0.7) +
+ggplot(summary_data, aes(x = Tissue_Treatment, y = mean_Delta_Air_vs_15N, fill = Treatment)) +
+  geom_bar(stat = "identity", color = "black", width = 0.7) +
   geom_errorbar(aes(ymin = mean_Delta_Air_vs_15N - se_Delta_Air_vs_15N, ymax = mean_Delta_Air_vs_15N + se_Delta_Air_vs_15N), 
-                position = position_dodge(0.7), width = 0.25) +
-  xlab("Tissue") +
+                width = 0.25) +
+  xlab("Tissue and Treatment") +
+  ylab("Mean Delta Air vs 15N") +
+  ggtitle("No ants vs Isotopic uptake Ants in Hydnophytum moseleyanum") +
+  theme_minimal() +
+  scale_fill_manual(values = c("No ants" = "orange", "Control + ants" = "grey")) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+##### H.m_barplot_no_ants_vs_ants
+
+
+library(ggplot2)
+library(dplyr)
+
+# Load the data
+path <- read.csv("C:/Users/bop21gwh/Documents/PhD work/isotope/isotope_data.csv", na.strings = c("", "NA"))
+
+# Ensure the Tissue column is a factor with the desired order
+path$Tissue <- factor(path$Tissue, levels = c("Leaves", "Tuber", "Smooth", "Warty"))
+
+# Ensure the Treatment column is a factor with "No ants" appearing first
+path$Treatment <- factor(path$Treatment, levels = c("No ants", "Control + ants"))
+
+# Convert Delta.Air.vs.15N to numeric, coercing non-numeric values to NA
+path$Delta.Air.vs.15N <- as.numeric(as.character(path$Delta.Air.vs.15N))
+
+# Remove rows with NA in Delta.Air.vs.15N (if needed)
+path <- path[complete.cases(path$Delta.Air.vs.15N), ]
+
+# Summarize data to calculate mean and standard error of Delta.Air.vs.15N for each Tissue type and Treatment
+summary_data <- path %>%
+  group_by(Tissue, Treatment) %>%
+  summarise(
+    mean_Delta_Air_vs_15N = mean(Delta.Air.vs.15N, na.rm = TRUE),
+    se_Delta_Air_vs_15N = sd(Delta.Air.vs.15N, na.rm = TRUE) / sqrt(n())
+  )
+
+# Create a combined factor for Tissue and Treatment to control the order in the plot
+summary_data$Tissue_Treatment <- interaction(summary_data$Tissue, summary_data$Treatment, sep = " - ")
+
+# Print the summarized data to ensure it's correct
+print(summary_data)
+
+# Create a bar plot with error bars using ggplot2
+ggplot(summary_data, aes(x = Tissue_Treatment, y = mean_Delta_Air_vs_15N, fill = Treatment)) +
+  geom_bar(stat = "identity", color = "black", width = 0.7) +
+  geom_errorbar(aes(ymin = mean_Delta_Air_vs_15N - se_Delta_Air_vs_15N, ymax = mean_Delta_Air_vs_15N + se_Delta_Air_vs_15N), 
+                width = 0.25) +
+  xlab("Tissue and Treatment") +
   ylab("Mean Delta Air vs 15N") +
   ggtitle("Isotopic uptake Ants vs no ants in Hydnophytum moseleyanum") +
   theme_minimal() +
-  scale_fill_manual(values = c("No ants" = "gray", "Control + ants" = "white")) 
+  scale_fill_manual(values = c("No ants" = "orange", "Control + ants" = "grey")) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
