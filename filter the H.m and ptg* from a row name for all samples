@@ -1,0 +1,67 @@
+lcl|H.m|_ptg000027l_000316.1 ; 333; 5e-99; 59; 76; 1
+lcl|H.m|_ptg000036l_000305.1 ; 330; 1e-97; 59; 75; 1
+lcl|H.m|_ptg000047l_000831.1 ; 239; 1e-66; 48; 70; 3
+lcl|H.m|_ptg000029l_000490.1 ; 239; 4e-66; 51; 71; 2
+lcl|H.m|_ptg000017l_001340.1 ; 226; 7e-62; 53; 69; 2
+lcl|H.m|_ptg000082l_000555.1 ; 226; 1e-61; 53; 69; 2
+lcl|H.m|_ptg000026l_001186.1 ; 222; 2e-60; 49; 66; 2
+lcl|H.m|_ptg000049l_000109.1 ; 204; 2e-54; 43; 66; 3
+
+result - filtering and mutating the desrption header to the identifier
+identifiers
+ptg000027l_000316.1
+ptg000036l_000305.1
+ptg000047l_000831.1
+ptg000029l_000490.1
+ptg000017l_001340.1
+ptg000082l_000555.1
+ptg000026l_001186.1
+ptg000049l_000109.1
+ptg000065l_001243.1
+ptg000060l_000373.1
+
+
+
+
+# Load necessary libraries
+library(readr)
+library(dplyr)
+library(stringr)
+library(tidyr)
+
+# Define the path to the input CSV file
+input_file_path <- "D:/genome/Annotation/alignments-table.csv"
+
+# Check if the file exists
+if (!file.exists(input_file_path)) {
+  stop("The input file does not exist.")
+}
+
+# Read the CSV file into a data frame with specified encoding
+data <- read_csv(input_file_path, locale = locale(encoding = "UTF-8"))
+
+# Print the first few rows of the data frame to check the contents
+head(data)
+
+# Filter rows that contain 'H.m' in any column
+filtered_data <- data %>%
+  filter_all(any_vars(grepl("H.m", ., ignore.case = TRUE)))
+
+# Extract all identifiers
+identifiers <- filtered_data %>%
+  mutate(identifiers = str_extract_all(., "ptg\\d{6}l_\\d{6}\\.\\d")) %>%
+  unnest(identifiers) %>%
+  select(identifiers) %>%
+  distinct()
+
+# Print the identifiers
+print(identifiers)
+
+# Define the path to the output CSV file
+output_file_path <- "D:/genome/Annotation/filtered_identifiers.csv"
+
+# Save the identifiers to a new CSV file
+write_csv(identifiers, output_file_path)
+
+# Print a message indicating that the file has been saved
+cat("Filtered identifiers saved to", output_file_path, "\n")
